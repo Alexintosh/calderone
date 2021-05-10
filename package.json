@@ -23,6 +23,7 @@
     "@nomiclabs/hardhat-etherscan": "^2.1.2",
     "@nomiclabs/hardhat-solhint": "^2.0.0",
     "@openzeppelin/contracts": "^3.4.1-solc-0.7-2",
+    "@openzeppelin/contracts-upgradeable": "3.4.1-solc-0.7-2",
     "dotenv": "^9.0.1",
     "hardhat-deploy": "^0.7.5",
     "hardhat-etherscan": "^1.0.1",

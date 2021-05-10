@@ -1,32 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.6;
-import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
  * @dev Contract module which allows children to implement an emergency stop
  * mechanism that can be triggered by an authorized account.
  *
  */
-contract Pausable is Context {
-    event Paused(address account);
+abstract contract Shutdownable is Pausable {
     event Shutdown(address account);
-    event Unpaused(address account);
     event Open(address account);
 
-    bool public paused;
     bool public stopEverything;
 
-    modifier whenNotPaused() {
-        require(!paused, "Pausable: paused");
-        _;
-    }
-    modifier whenPaused() {
-        require(paused, "Pausable: not paused");
-        _;
-    }
-
     modifier whenNotShutdown() {
-        require(!stopEverything, "Pausable: shutdown");
+        require(!stopEverything, "Shutdownable: is shutdown");
         _;
     }
 
@@ -35,26 +23,14 @@ contract Pausable is Context {
         _;
     }
 
-    /// @dev Pause contract operations, if contract is not paused.
-    function _pause() internal virtual whenNotPaused {
-        paused = true;
-        emit Paused(_msgSender());
-    }
-
-    /// @dev Unpause contract operations, allow only if contract is paused and not shutdown.
-    function _unpause() internal virtual whenPaused whenNotShutdown {
-        paused = false;
-        emit Unpaused(_msgSender());
-    }
-
     /// @dev Shutdown contract operations, if not already shutdown.
     function _shutdown() internal virtual whenNotShutdown {
         stopEverything = true;
-        paused = true;
+        _pause();
         emit Shutdown(_msgSender());
     }
 
-    /// @dev Open contract operations, if contract is in shutdown state
+    /// @dev Open contract operations, if contract is in shutdown state, keeps it paused
     function _open() internal virtual whenShutdown {
         stopEverything = false;
         emit Open(_msgSender());
